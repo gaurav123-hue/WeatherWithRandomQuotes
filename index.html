@@ -27,11 +27,11 @@
             </div>
 
         </div>
-        <!-- <div class="error-msg mt-8 hidden">
+        <div class="error-msg mt-8 hidden">
             <p class="text-red-500 font-bold text-lg">
                 Invalid City Name
             </p>
-        </div> -->
+        </div>
 
         <div
             class=" flex-col  m-auto items-center justify-center left-0  hidden  weather">
@@ -128,7 +128,9 @@
     async function checkWhether(city){
         const whetherResponse = await fetch( whetherApiUrl + city +`&appid=${whetherApikey}`);
         if(whetherResponse.status == 404){
-            document.querySelector('.error-msg').classList.toggle("hidden")
+            document.querySelector('.error-msg').classList.add("hidden")
+        } else {
+            document.querySelector('.error-msg').classList.remove("hidden")
         }
         var whetherData = await whetherResponse.json();
 
