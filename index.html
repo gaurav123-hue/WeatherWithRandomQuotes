@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhetherForeCast</title>
+</head>
+<!--Style Script-->
+<link rel="stylesheet" href="custom.css">
+<link rel="stylesheet" href="style.css">
+<!--Font Awesome-->
+<script src="https://kit.fontawesome.com/e4a2ea9e4b.js" crossorigin="anonymous"></script>
+<body class=" bg-black  flex items-center justify-center h-screen">
+    <!--Main Card-->
+    <div id="main-card" 
+        class=" align-middle w-96 bg-gradient-to-br from-sky-300 to-indigo-500 h-auto  p-3  flex items-center flex-col ">
+        <div id="search-div">
+            <div id="search-bar"
+                class="m-auto flex items-center justify-center "  >
+                <input type="text" placeholder="Enter Location" 
+                    class="outline-none p-1 rounded-full pl-2" id="search" autocomplete="off" >
+                <button id = "search-btn"
+                    class="hover:scale-90 ml-1 bg-black p-1 rounded-full w-8">
+                        <i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>
+                </button>
+
+            </div>
+
+        </div>
+        <!-- <div class="error-msg mt-8 hidden">
+            <p class="text-red-500 font-bold text-lg">
+                Invalid City Name
+            </p>
+        </div> -->
+
+        <div
+            class=" flex-col  m-auto items-center justify-center left-0  hidden  weather">
+            <div id="card-left "
+                class=" block sm:flex sm:flex-row  ">    
+            
+                <div id="whether-info" 
+                    class="flex flex-col items-center justify-center mt-6 mx-6">
+                    <img src="sunny_day.png" id="curr-icon"
+                        class="h-24">
+                    <h1 id="city-temp"
+                        class="text-yellow-50 font-mono text-4xl mt-2">
+                        40°C
+                    </h1>
+
+                    <h2 id="city"
+                        class="text-yellow-50 font-mono text-3xl mt-0 " >
+                        Mumbai 
+                    </h2>
+
+
+                </div>
+                <div id="whether-details"
+                    class=" mt-12 sm:flex sm:flex-col  m-2 flex flex-row  justify-around">
+                    <div
+                        class="flex items-center flex-col ">
+                        <img src="wind.png" class="h-6">
+                        <p id="wind-speed"
+                            class="text-yellow-100 text-sm font-mono mt-2 ">
+                            45 
+                        </p>
+                        <p 
+                        class="text-yellow-100 text-sm font-mono mt-0">
+                        Wind Speed
+                        </p>
+
+                    </div>
+
+                    <div
+                        class="flex items-center flex-col ml-6 sm:ml-0 sm:mt-2 ">
+                        <img src="humidity.png" class="h-6">
+                        <p id="humidity"
+                            class="text-yellow-100 text-sm font-mono mt-2  ">
+                            50%
+                        </p>
+                        <p 
+                        class="text-yellow-100 text-sm font-mono mt-0">
+                        Humidity
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+        <div id="card-right"
+        class="w-72 mx-3 pt-8 flex-col flex items-center justify-center ">
+        <p
+            class="font-mono text-yellow-100  text-sm tracking-tight quote">
+            The future belongs to those who believe in the beauty of their dreams<br>
+            
+        </p>
+        <p
+            class="font-mono text-yellow-100  text-sm tracking-tight author-name left-0">
+            <br>
+            - Eleanor Roosevelt
+        </p>
+        
+
+    
+    </div>
+
+
+
+       
+
+       
+    </div>
+</body>
+
+<script>
+    // Main script goes here
+
+    const quoteUrl = "https://api.quotable.io/random"
+
+    const city = document.getElementById('search');
+    const searchBtn = document.getElementById('search-btn');
+    const weatherIcon = document.getElementById('curr-icon');
+
+    const whetherApikey = "2fa85d3079b14d3da15a79f4a010a8bd";
+    const whetherApiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+
+    async function checkWhether(city){
+        const whetherResponse = await fetch( whetherApiUrl + city +`&appid=${whetherApikey}`);
+        if(whetherResponse.status == 404){
+            document.querySelector('.error-msg').classList.toggle("hidden")
+        }
+        var whetherData = await whetherResponse.json();
+
+        console.log(whetherData);
+
+        document.getElementById('city').innerHTML = whetherData.name;
+        document.getElementById('city-temp').innerHTML = Math.round(whetherData.main.temp) + '°C';
+        document.getElementById('wind-speed').innerHTML = whetherData.wind.speed + ' km/hr';
+        document.getElementById('humidity').innerHTML = whetherData.main.humidity + ' %';
+
+
+        if(whetherData.weather[0].main === "Clouds"){
+            weatherIcon.src = "cloudy.png";
+        } else if(whetherData.weather[0].main === "Rain" ){
+            weatherIcon.src = "little_rain.png";
+        } else if(whetherData.weather[0].main === "Mist" ){
+            weatherIcon.src = "mist.png";
+        } else if(whetherData.weather[0].main === "Clear" ){
+            weatherIcon.src = "sunny_day.png";
+        } else if(whetherData.weather[0].main === "Snow" ){
+            weatherIcon.src = "snow.png"
+        }
+
+
+        document.querySelector('.weather').classList.remove("hidden")
+       
+
+
+    }
+
+
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                checkWhether(city.value);
+            }
+            }
+
+    async function randomQuote(url){
+        const quoteResponse = await fetch(url);
+        var quoteData = await quoteResponse.json();
+        document.querySelector('.quote').innerHTML = quoteData.content;
+        document.querySelector('.author-name').innerHTML = '- ' + quoteData.author;
+
+    }
+    searchBtn.addEventListener("click",()=>{
+        checkWhether(city.value);
+        randomQuote(quoteUrl);
+        
+           
+    });
+
+    searchBtn.addEventListener("click",()=>{
+        
+           
+    });
+
+
+
+    
+
+</script>
+</html> 
